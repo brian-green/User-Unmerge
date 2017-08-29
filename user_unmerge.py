@@ -3,7 +3,7 @@ import requests
 import json
 
 # Authentication Data and Routes
-url = 'https://vormetric.zendesk.com/api/v2/users/14848863609/tickets/requested.json'
+url = 'https://SUBDOMAIN.zendesk.com/api/v2/users/SOURCE-USER-ID/tickets/requested.json'
 user = 'agiron@vormetric.com/token'
 token = 'TOKEN'
 
@@ -31,17 +31,17 @@ def repost(list):
     for ticket_id in ticket_list:
         
         print('Getting ticket data')
-        ticket_data = s.get('https://vormetric.zendesk.com/api/v2/tickets/' + str(ticket_id) + '.json')
+        ticket_data = s.get('https://SUBDOMAIN.zendesk.com/api/v2/tickets/' + str(ticket_id) + '.json')
         
         ticket_data = ticket_data.json()
         
         print('Modifying ticket data')
         del ticket_data['ticket']['satisfaction_probability']
         del ticket_data['ticket']['satisfaction_rating']
-        ticket_data['ticket']['requester_id'] = 15059003489
+        ticket_data['ticket']['requester_id'] = TARGET_USER_ID_INT
         
         print('Getting comments')
-        comment_data = s.get('https://vormetric.zendesk.com/api/v2/tickets/' + str(ticket_id) + '/comments.json')
+        comment_data = s.get('https://SUBDOMAIN.zendesk.com/api/v2/tickets/' + str(ticket_id) + '/comments.json')
         comment_data = comment_data.json()
         comments = comment_data['comments']
         
@@ -49,7 +49,7 @@ def repost(list):
         ticket_data['comments'] = comments
         ticket_data = json.dumps(ticket_data)
 
-        post = s.post('https://vormetric.zendesk.com/api/v2/imports/tickets.json', data = ticket_data)
+        post = s.post('https://SUBDOMAIN.zendesk.com/api/v2/imports/tickets.json', data = ticket_data)
         
         if post.status_code == 201:
             print("Posted ticket #" + str(ticket_id))
