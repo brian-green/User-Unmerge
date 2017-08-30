@@ -4,7 +4,7 @@ import json
 
 # Authentication Data and Routes
 url = 'https://SUBDOMAIN.zendesk.com/api/v2/users/SOURCE-USER-ID/tickets/requested.json'
-user = 'agiron@vormetric.com/token'
+user = 'user@email.com/token'
 token = 'TOKEN'
 
 print('Creating the Session')
