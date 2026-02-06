@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/@zendeskgarden/css-bedrock@2.0.5,npm/@zendeskgarden/css-utilities@4.4.0">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div id="app">
+    <section id="user-info">
+      <h2 id="user-name" class="u-semibold"></h2>
+      <p id="user-email" class="u-regular"></p>
+    </section>
+
+    <section id="ticket-section">
+      <div id="loading" class="spinner">
+        <p>Loading tickets...</p>
+      </div>
+
+      <div id="ticket-list" class="hidden">
+        <div class="ticket-header">
+          <label class="u-semibold">
+            <input type="checkbox" id="select-all"> Select all
+          </label>
+          <span id="ticket-count" class="u-regular"></span>
+        </div>
+        <ul id="tickets"></ul>
+      </div>
+
+      <div id="no-tickets" class="hidden">
+        <p class="u-regular">No tickets found for this user.</p>
+      </div>
+    </section>
+
+    <section id="unmerge-section" class="hidden">
+      <label class="u-semibold" for="target-user-id">Target User ID</label>
+      <input type="number" id="target-user-id" placeholder="Enter target user ID">
+      <button id="unmerge-btn" class="btn btn-primary" disabled>Unmerge Selected Tickets</button>
+    </section>
+
+    <section id="progress-section" class="hidden">
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <p id="progress-text" class="u-regular"></p>
+      <div id="log" class="log-output"></div>
+    </section>
+
+    <div id="error" class="alert alert-error hidden"></div>
+  </div>
+
+  <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

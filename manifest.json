@@ -1,0 +1,19 @@
+{
+  "name": "User Unmerge",
+  "author": {
+    "name": "Brian Green"
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "user_sidebar": {
+        "url": "assets/iframe.html",
+        "flexible": true
+      }
+    }
+  },
+  "version": "1.0.0",
+  "frameworkVersion": "2.0",
+  "parameters": []
+}

@@ -1,0 +1,7 @@
+{
+  "app": {
+    "name": "User Unmerge",
+    "short_description": "Reassign tickets from one user to another.",
+    "long_description": "Moves all tickets from the currently viewed user to a target user by re-importing them with updated requester information."
+  }
+}
