@@ -28,8 +28,6 @@
 		A10000019 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000019; };
 		A10000020 /* TileMapBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020; };
 		A10000021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000021; };
-		A10000022 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A20000022; };
-		A10000023 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A20000023; };
 		A10000024 /* BossEnemy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000024; };
 		A10000025 /* WaterMechanics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000025; };
 /* End PBXBuildFile section */
@@ -56,8 +54,6 @@
 		A20000019 /* GameOverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
 		A20000020 /* TileMapBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileMapBuilder.swift; sourceTree = "<group>"; };
 		A20000021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A20000022 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A20000023 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A20000024 /* BossEnemy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BossEnemy.swift; sourceTree = "<group>"; };
 		A20000025 /* WaterMechanics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterMechanics.swift; sourceTree = "<group>"; };
 		A30000001 /* MoanaOceanQuest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoanaOceanQuest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,8 +92,6 @@
 				A50000008 /* UI */,
 				A500000010 /* Utils */,
 				A20000021 /* Assets.xcassets */,
-				A20000022 /* LaunchScreen.storyboard */,
-				A20000023 /* Main.storyboard */,
 				A30000002 /* Info.plist */,
 			);
 			path = MoanaOceanQuest;
@@ -239,8 +233,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000021 /* Assets.xcassets in Resources */,
-				A10000022 /* LaunchScreen.storyboard in Resources */,
-				A10000023 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,8 +330,6 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MoanaOceanQuest/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft;
@@ -365,8 +355,6 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MoanaOceanQuest/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft;
