@@ -24,7 +24,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var gameTime: TimeInterval = 0
     private var lastUpdateTime: TimeInterval = 0
     private var isGameOver = false
-    private var isPaused = false
+    private var isGamePaused = false
     private var levelComplete = false
 
     // Touch tracking
@@ -254,7 +254,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         lastUpdateTime = currentTime
 
-        if isPaused { return }
+        if isGamePaused { return }
 
         gameTime += deltaTime
 
@@ -364,12 +364,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         // Projectile + Enemy
         if collision == PhysicsCategory.projectile | PhysicsCategory.enemy {
-            let enemyNode = (nodeA?.categoryBitMask == PhysicsCategory.enemy ? nodeA : nodeB)
+            let enemyNode = (nodeA?.physicsBody?.categoryBitMask == PhysicsCategory.enemy ? nodeA : nodeB)
             if let enemy = enemyNode as? BaseEnemy {
                 enemy.takeDamage(player.attackDamage)
             }
             // Remove fireball if hit
-            let projectileNode = (nodeA?.categoryBitMask == PhysicsCategory.projectile ? nodeA : nodeB)
+            let projectileNode = (nodeA?.physicsBody?.categoryBitMask == PhysicsCategory.projectile ? nodeA : nodeB)
             if projectileNode?.name == "playerAttack" {
                 // Attack box is handled by PlayerCharacter
             }
@@ -562,11 +562,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func togglePause() {
         if hud.isPauseMenuShowing {
             hud.dismissPauseMenu()
-            isPaused = false
-            self.scene?.isPaused = false
+            isGamePaused = false
+            self.isPaused = false
         } else {
             hud.showPauseMenu(in: self)
-            isPaused = true
+            isGamePaused = true
         }
     }
 
