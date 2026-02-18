@@ -4,10 +4,14 @@ import GameplayKit
 
 class GameViewController: UIViewController {
 
+    override func loadView() {
+        self.view = SKView()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let view = self.view as? SKView else { return }
+        let view = self.view as! SKView
 
         let scene = MainMenuScene(size: CGSize(width: 1334, height: 750))
         scene.scaleMode = .aspectFill
