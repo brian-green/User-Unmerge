@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whale Habitat Map</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a1628;
+      color: #e0f0ff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0a1628 0%, #0d2444 100%);
+      border-bottom: 1px solid #1e4080;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      z-index: 1000;
+    }
+
+    header .whale-icon { font-size: 2rem; }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #7dd3fc;
+    }
+
+    header p {
+      font-size: 0.78rem;
+      color: #93b8d4;
+      margin-top: 2px;
+    }
+
+    .controls {
+      background: #0d1f3c;
+      border-bottom: 1px solid #1e4080;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 999;
+    }
+
+    .controls-label {
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5a8aac;
+      margin-right: 4px;
+    }
+
+    .species-btn {
+      padding: 5px 13px;
+      border-radius: 20px;
+      border: 1.5px solid;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: transparent;
+    }
+
+    .species-btn.active {
+      color: #fff;
+    }
+
+    .species-btn:not(.active) {
+      opacity: 0.45;
+      filter: grayscale(0.4);
+    }
+
+    .species-btn:hover { opacity: 1 !important; filter: none !important; }
+
+    #map {
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Leaflet popup overrides */
+    .leaflet-popup-content-wrapper {
+      background: #0d2444;
+      border: 1px solid #1e5090;
+      border-radius: 12px;
+      color: #d0eaff;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+
+    .leaflet-popup-tip { background: #0d2444; }
+
+    .leaflet-popup-content {
+      margin: 14px 18px;
+      min-width: 240px;
+    }
+
+    .popup-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .popup-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .popup-header h3 {
+      font-size: 1rem;
+      color: #7dd3fc;
+    }
+
+    .popup-header .latin {
+      font-size: 0.72rem;
+      font-style: italic;
+      color: #6a9ab8;
+    }
+
+    .popup-body p {
+      font-size: 0.8rem;
+      line-height: 1.55;
+      color: #b0d0e8;
+      margin-bottom: 8px;
+    }
+
+    .popup-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .stat {
+      background: #0a1628;
+      border-radius: 8px;
+      padding: 7px 10px;
+    }
+
+    .stat .stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #4a7a9b;
+    }
+
+    .stat .stat-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #7dd3fc;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .status-lc { background: #14532d; color: #86efac; }
+    .status-nt { background: #1e3a5f; color: #93c5fd; }
+    .status-vu { background: #451a03; color: #fcd34d; }
+    .status-en { background: #431407; color: #fca5a5; }
+    .status-cr { background: #3b0764; color: #d8b4fe; }
+
+    .legend {
+      background: #0d2444;
+      border: 1px solid #1e4080;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.75rem;
+      line-height: 1.7;
+      min-width: 130px;
+    }
+
+    .legend h4 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #5a8aac;
+      margin-bottom: 6px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #b0d0e8;
+    }
+
+    .legend-swatch {
+      width: 18px;
+      height: 10px;
+      border-radius: 3px;
+      opacity: 0.75;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="whale-icon">🐋</div>
+  <div>
+    <h1>Whale Habitat Map</h1>
+    <p>Interactive guide to where whale species live around the world</p>
+  </div>
+</header>
+
+<div class="controls" id="controls">
+  <span class="controls-label">Show species:</span>
+</div>
+
+<div id="map"></div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const SPECIES = [
+  {
+    id: 'blue',
+    name: 'Blue Whale',
+    latin: 'Balaenoptera musculus',
+    color: '#3b82f6',
+    status: 'en',
+    statusLabel: 'Endangered',
+    length: '24–33 m',
+    weight: '100–200 t',
+    diet: 'Krill',
+    desc: 'The largest animal ever known to have existed on Earth. Blue whales feed almost exclusively on krill and undertake long migrations between polar feeding grounds and tropical breeding areas.',
+    regions: [
+      // North Atlantic
+      [[-10,70],[20,70],[20,55],[-10,55]],
+      // North Pacific
+      [[130,60],[220,60],[220,30],[130,30]],
+      // Southern Ocean
+      [[-180,-40],[-180,-70],[180,-70],[180,-40]],
+      // Indian Ocean / Sri Lanka area
+      [[55,-10],[90,-10],[90,20],[55,20]],
+    ]
+  },
+  {
+    id: 'humpback',
+    name: 'Humpback Whale',
+    latin: 'Megaptera novaeangliae',
+    color: '#8b5cf6',
+    status: 'lc',
+    statusLabel: 'Least Concern',
+    length: '12–16 m',
+    weight: '25–40 t',
+    diet: 'Fish & krill',
+    desc: 'Famous for their hauntingly beautiful songs, humpbacks are found in every ocean. They migrate between polar feeding grounds and tropical calving grounds, sometimes covering 8,000+ km.',
+    regions: [
+      // North Atlantic
+      [[-80,75],[20,75],[20,10],[-80,10]],
+      // North Pacific
+      [[120,65],[250,65],[250,5],[120,5]],
+      // Southern Hemisphere
+      [[-180,-10],[-180,-65],[180,-65],[180,-10]],
+    ]
+  },
+  {
+    id: 'sperm',
+    name: 'Sperm Whale',
+    latin: 'Physeter macrocephalus',
+    color: '#ef4444',
+    status: 'vu',
+    statusLabel: 'Vulnerable',
+    length: '11–18 m',
+    weight: '15–57 t',
+    diet: 'Giant squid & fish',
+    desc: 'The largest toothed predator on Earth, capable of diving over 2,000 m in search of giant squid. Sperm whales are found in all deep oceans and have the largest brain of any animal.',
+    regions: [
+      [[-180,-70],[-180,70],[180,70],[180,-70]],
+    ]
+  },
+  {
+    id: 'orca',
+    name: 'Orca',
+    latin: 'Orcinus orca',
+    color: '#f59e0b',
+    status: 'nt',
+    statusLabel: 'Near Threatened',
+    length: '5–8 m',
+    weight: '3–6 t',
+    diet: 'Fish, squid, marine mammals',
+    desc: 'Apex predators found in every ocean, orcas live in complex social groups called pods. They are highly intelligent and use sophisticated echolocation and cooperative hunting techniques.',
+    regions: [
+      // Arctic
+      [[-180,65],[-180,90],[180,90],[180,65]],
+      // Antarctic
+      [[-180,-55],[-180,-80],[180,-80],[180,-55]],
+      // Temperate N Pacific
+      [[130,65],[250,65],[250,30],[130,30]],
+      // Temperate N Atlantic
+      [[-80,70],[20,70],[20,30],[-80,30]],
+      // Southern temperate oceans
+      [[-180,-30],[-180,-55],[180,-55],[180,-30]],
+    ]
+  },
+  {
+    id: 'bowhead',
+    name: 'Bowhead Whale',
+    latin: 'Balaena mysticetus',
+    color: '#06b6d4',
+    status: 'lc',
+    statusLabel: 'Least Concern',
+    length: '14–18 m',
+    weight: '75–100 t',
+    diet: 'Zooplankton & krill',
+    desc: 'Built for Arctic life, bowhead whales can break through sea ice up to 60 cm thick with their massive heads. They may live over 200 years, making them the longest-lived mammals on Earth.',
+    regions: [
+      // Arctic Ocean
+      [[-180,65],[-180,90],[180,90],[180,65]],
+    ]
+  },
+  {
+    id: 'gray',
+    name: 'Gray Whale',
+    latin: 'Eschrichtius robustus',
+    color: '#6b7280',
+    status: 'lc',
+    statusLabel: 'Least Concern',
+    length: '13–15 m',
+    weight: '15–35 t',
+    diet: 'Amphipods & tube worms',
+    desc: 'Gray whales undertake one of the longest migrations of any mammal — up to 20,000 km round trip — between Arctic feeding grounds and warm Mexican lagoons where they breed and calve.',
+    regions: [
+      // Eastern Pacific coast
+      [[-135,65],[-105,65],[-105,15],[-135,15]],
+    ]
+  },
+  {
+    id: 'narwhal',
+    name: 'Narwhal',
+    latin: 'Monodon monoceros',
+    color: '#ec4899',
+    status: 'nt',
+    statusLabel: 'Near Threatened',
+    length: '4–5.5 m',
+    weight: '0.8–1.6 t',
+    diet: 'Fish, squid & shrimp',
+    desc: 'The "unicorn of the sea," narwhals are known for the long spiral tusk (actually an elongated tooth) found on males. They live year-round in Arctic waters around Canada, Greenland, and Russia.',
+    regions: [
+      // Canadian Arctic + Greenland
+      [[-110,75],[-10,75],[-10,85],[-110,85]],
+      [[-80,65],[-10,65],[-10,75],[-80,75]],
+    ]
+  },
+  {
+    id: 'beluga',
+    name: 'Beluga Whale',
+    latin: 'Delphinapterus leucas',
+    color: '#e0f2fe',
+    status: 'nt',
+    statusLabel: 'Near Threatened',
+    length: '3–5 m',
+    weight: '0.5–1.5 t',
+    diet: 'Fish, crustaceans & squid',
+    desc: 'Called the "canary of the sea" for their rich vocal repertoire, belugas are highly social, all-white whales adapted to cold Arctic and sub-Arctic waters. They can change the shape of their facial expressions.',
+    regions: [
+      // Arctic and sub-Arctic
+      [[-180,58],[-180,85],[180,85],[180,58]],
+    ]
+  },
+  {
+    id: 'minke',
+    name: 'Minke Whale',
+    latin: 'Balaenoptera acutorostrata',
+    color: '#10b981',
+    status: 'lc',
+    statusLabel: 'Least Concern',
+    length: '7–10 m',
+    weight: '5–10 t',
+    diet: 'Krill & small fish',
+    desc: 'The smallest baleen whale in the Northern Hemisphere, minkes are fast, curious, and widespread. They are the most common baleen whale globally and often approach boats out of curiosity.',
+    regions: [
+      // Worldwide excluding tropics
+      [[-180,20],[-180,80],[180,80],[180,20]],
+      [[-180,-20],[-180,-70],[180,-70],[180,-20]],
+    ]
+  },
+  {
+    id: 'right',
+    name: 'North Atlantic Right Whale',
+    latin: 'Eubalaena glacialis',
+    color: '#f97316',
+    status: 'cr',
+    statusLabel: 'Critically Endangered',
+    length: '11–17 m',
+    weight: '40–70 t',
+    diet: 'Copepods & krill',
+    desc: 'One of the most endangered large whales with fewer than 360 individuals remaining. Right whales feed on dense patches of copepods near the ocean surface and are highly vulnerable to ship strikes and entanglement.',
+    regions: [
+      // North Atlantic coast
+      [[-80,25],[-50,25],[-50,55],[-80,55]],
+      [[-50,45],[0,45],[0,65],[-50,65]],
+    ]
+  },
+];
+
+// ── Map ───────────────────────────────────────────────────────────────────────
+
+const map = L.map('map', {
+  center: [20, 0],
+  zoom: 2,
+  minZoom: 1,
+  maxZoom: 8,
+  worldCopyJump: true,
+});
+
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
+  maxZoom: 10,
+}).addTo(map);
+
+// ── Legend ────────────────────────────────────────────────────────────────────
+
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = () => {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <h4>Conservation Status</h4>
+    <div class="legend-row"><span class="legend-swatch" style="background:#86efac"></span> Least Concern</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#93c5fd"></span> Near Threatened</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#fcd34d"></span> Vulnerable</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#fca5a5"></span> Endangered</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#d8b4fe"></span> Critically Endangered</div>
+  `;
+  return div;
+};
+legend.addTo(map);
+
+// ── Layer Management ──────────────────────────────────────────────────────────
+
+const layerGroups = {};
+const activeSpecies = new Set(SPECIES.map(s => s.id));
+
+function buildPopup(species) {
+  return `
+    <div class="popup-header">
+      <div class="popup-dot" style="background:${species.color}"></div>
+      <div>
+        <h3>${species.name}</h3>
+        <div class="latin">${species.latin}</div>
+      </div>
+    </div>
+    <span class="status-badge status-${species.status}">${species.statusLabel}</span>
+    <div class="popup-body"><p>${species.desc}</p></div>
+    <div class="popup-stats">
+      <div class="stat">
+        <div class="stat-label">Length</div>
+        <div class="stat-value">${species.length}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Weight</div>
+        <div class="stat-value">${species.weight}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Diet</div>
+        <div class="stat-value">${species.diet}</div>
+      </div>
+    </div>
+  `;
+}
+
+SPECIES.forEach(species => {
+  const group = L.layerGroup();
+
+  species.regions.forEach(rect => {
+    const [sw, se, ne, nw] = rect;
+    // rect is [[w,s],[e,s],[e,n],[w,n]] — convert to LatLng
+    const [w, s] = rect[0];
+    const [e, n] = rect[2];
+    const bounds = L.latLngBounds([[s, w], [n, e]]);
+
+    const layer = L.rectangle(bounds, {
+      color: species.color,
+      fillColor: species.color,
+      fillOpacity: 0.25,
+      weight: 1.5,
+      opacity: 0.7,
+    }).bindPopup(buildPopup(species), { maxWidth: 320 });
+
+    group.addLayer(layer);
+  });
+
+  group.addTo(map);
+  layerGroups[species.id] = group;
+});
+
+// ── Controls ──────────────────────────────────────────────────────────────────
+
+const controlsEl = document.getElementById('controls');
+
+SPECIES.forEach(species => {
+  const btn = document.createElement('button');
+  btn.className = 'species-btn active';
+  btn.textContent = species.name;
+  btn.style.borderColor = species.color;
+  btn.style.color = species.color;
+  btn.style.backgroundColor = species.color + '22';
+
+  btn.addEventListener('click', () => {
+    if (activeSpecies.has(species.id)) {
+      activeSpecies.delete(species.id);
+      map.removeLayer(layerGroups[species.id]);
+      btn.classList.remove('active');
+      btn.style.backgroundColor = 'transparent';
+    } else {
+      activeSpecies.add(species.id);
+      map.addLayer(layerGroups[species.id]);
+      btn.classList.add('active');
+      btn.style.backgroundColor = species.color + '22';
+    }
+  });
+
+  controlsEl.appendChild(btn);
+});
+
+// All / None toggle
+const allBtn = document.createElement('button');
+allBtn.className = 'species-btn active';
+allBtn.textContent = 'All';
+allBtn.style.cssText = 'border-color:#7dd3fc;color:#7dd3fc;background:rgba(125,211,252,0.13);margin-left:8px';
+allBtn.addEventListener('click', () => {
+  const shouldShowAll = activeSpecies.size < SPECIES.length;
+  SPECIES.forEach(s => {
+    if (shouldShowAll && !activeSpecies.has(s.id)) {
+      activeSpecies.add(s.id);
+      map.addLayer(layerGroups[s.id]);
+    } else if (!shouldShowAll && activeSpecies.has(s.id)) {
+      activeSpecies.delete(s.id);
+      map.removeLayer(layerGroups[s.id]);
+    }
+  });
+  const btns = controlsEl.querySelectorAll('.species-btn:not(:last-child)');
+  btns.forEach((b, i) => {
+    if (shouldShowAll) {
+      b.classList.add('active');
+      b.style.backgroundColor = SPECIES[i].color + '22';
+    } else {
+      b.classList.remove('active');
+      b.style.backgroundColor = 'transparent';
+    }
+  });
+  allBtn.textContent = shouldShowAll ? 'None' : 'All';
+});
+controlsEl.appendChild(allBtn);
+</script>
+</body>
+</html>
